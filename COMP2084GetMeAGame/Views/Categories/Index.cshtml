@@ -6,7 +6,8 @@
 
 @model IEnumerable<COMP2084GetMeAGame.Models.Category>
 
-<h1>Pick a Category</h1>
+<h1>Pick a Category to browse our store</h1>
+<a asp-controller="Categories" asp-action="AddCategory">Add a new category</a>
 
 <ul>
     @foreach (var category in Model)
