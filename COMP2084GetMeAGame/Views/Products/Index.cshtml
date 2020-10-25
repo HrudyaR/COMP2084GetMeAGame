@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<COMP2084GetMeAGame.Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Prodects";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Products</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -16,7 +16,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th>
+            <th class="text-right">
                 @Html.DisplayNameFor(model => model.Price)
             </th>
             <th>
@@ -37,11 +37,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-            <td>
+            <td class="text-right">
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Photo)
+                @*@Html.DisplayFor(modelItem => item.Photo)*@
+                @if(item.Photo != null)
+                {
+                    <img src="~/images/product-uploads/@item.Photo" class="img-thumbnail" alt="Product Image" />
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
