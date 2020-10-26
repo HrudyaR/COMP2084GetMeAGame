@@ -41,6 +41,12 @@ namespace COMP2084GetMeAGame
                     options.ClientId = googleAuthNSection["ClientId"];
                     options.ClientSecret = googleAuthNSection["ClientSecret"];
                 });
+            services.AddAuthentication().AddFacebook(facebookOptions =>
+            {
+                IConfigurationSection facebookAuthNSection = Configuration.GetSection("Authentication:Facebook");
+                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            });
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
