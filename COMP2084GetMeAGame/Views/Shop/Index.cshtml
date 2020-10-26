@@ -1,0 +1,21 @@
+﻿@model IEnumerable<COMP2084GetMeAGame.Models.Category>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Choose any Categorys</h1>
+
+<section class="row card-group">
+    @foreach (var item in Model)
+    {
+        <div class="col-sm-6 col-lg-4 mb-3">
+            <div class="card mb-4 text-center h-100">
+                <div class="card-body">
+                    <a asp-controller="Shop" asp-action="Index"  asp-route-id="@item.Id">@item.Name</a>
+                </div>
+            </div>
+        </div>
+    }
+</section>
