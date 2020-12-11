@@ -6,6 +6,7 @@ using COMP2084GetMeAGame.Data;
 using COMP2084GetMeAGame.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace COMP2084GetMeAGame.Controllers
 {
@@ -88,6 +89,25 @@ namespace COMP2084GetMeAGame.Controllers
 
             // return the CustomerId to the AddToCart method
             return HttpContext.Session.GetString("CustomerId");
+        }
+
+        // GET: /Shop/Cart
+        public IActionResult Cart()
+        {
+            // get CustomerId from the session variable
+            var customerId = HttpContext.Session.GetString("CustomerId");
+
+            // get items in this customer's cart - add reference to the parent object: Product
+            var cartItems = _context.Carts.Include(c => c.Product).Where(c => c.CustomerId == customerId).ToList();
+
+            // count the # of items in the Cart and write to a session variable to display in the navbar
+            var itemCount = (from c in _context.Carts
+                             where c.CustomerId == customerId
+                             select c.Quantity).Sum();
+            HttpContext.Session.SetInt32("ItemCount", itemCount);
+
+            // load the cart page and display the customer's items
+            return View(cartItems);
         }
     }
 }
