@@ -15,6 +15,10 @@ namespace COMP2084GetMeAGame.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Cart> Carts { get; set; }
 
+        // new Models for Checkout
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

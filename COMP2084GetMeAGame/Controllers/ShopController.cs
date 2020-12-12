@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using COMP2084GetMeAGame.Data;
 using COMP2084GetMeAGame.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,19 +43,19 @@ namespace COMP2084GetMeAGame.Controllers
             var customerId = GetCustomerId();
 
             // check if product already exists in this user's cart
-            //var cartItem = _context.Carts.SingleOrDefault(c => c.ProductId == ProductId && c.CustomerId == customerId);
+            var cartItem = _context.Carts.SingleOrDefault(c => c.ProductId == ProductId && c.CustomerId == customerId);
 
-            //if (cartItem != null)
-            //{
-            //    // product already exists so update the quantity
-            //    cartItem.Quantity += Quantity;
-            //    _context.Update(cartItem);
-            //    _context.SaveChanges();
-            //}
-            //else
-            //{
-            // create a new Cart object
-            var cart = new Cart
+            if (cartItem != null)
+            {
+                // product already exists so update the quantity
+                cartItem.Quantity += Quantity;
+                _context.Update(cartItem);
+                _context.SaveChanges();
+            }
+            else
+            {
+                // create a new Cart object
+                var cart = new Cart
                 {
                     ProductId = ProductId,
                     Quantity = Quantity,
@@ -66,7 +67,7 @@ namespace COMP2084GetMeAGame.Controllers
                 // use the Carts DbSet in ApplicationContext.cs to save to the database
                 _context.Carts.Add(cart);
                 _context.SaveChanges();
-            //}
+            }
 
             // redirect to show the current cart
             return RedirectToAction("Cart");
@@ -108,6 +109,49 @@ namespace COMP2084GetMeAGame.Controllers
 
             // load the cart page and display the customer's items
             return View(cartItems);
+        }
+
+        // GET: /Shop/Checkout
+        [Authorize]
+        public IActionResult Checkout()
+        {
+            return View();
+        }
+
+        // POST: /Shop/Checkout
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Checkout([Bind("Address,City,Province,PostalCode")] Order order)
+        {
+            // auto-fill the 3 properties we removed from the form
+            order.OrderDate = DateTime.Now;
+            order.CustomerId = User.Identity.Name;
+            order.Total = (from c in _context.Carts
+                           where c.CustomerId == HttpContext.Session.GetString("CustomerId")
+                           select c.Quantity * c.Price).Sum();
+
+            // now store Order in a session variable before moving to Payment
+            HttpContext.Session.SetObject("Order", order);
+
+            // load the payment page
+            return RedirectToAction("Payment");
+        }
+
+        // GET: /Shop/RemoveFromCart/12
+        public IActionResult RemoveFromCart(int id)
+        {
+            // remove the selected item from Carts table
+            var cartItem = _context.Carts.Find(id);
+
+            if (cartItem != null)
+            {
+                _context.Carts.Remove(cartItem);
+                _context.SaveChanges();
+            }
+
+            // redirect to updated Cart page
+            return RedirectToAction("Cart");
         }
     }
 }

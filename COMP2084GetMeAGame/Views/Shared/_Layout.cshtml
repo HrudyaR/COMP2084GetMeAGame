@@ -1,4 +1,5 @@
 ﻿<!DOCTYPE html>
+@using Microsoft.AspNetCore.Http;
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,6 +24,16 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Shop" asp-action="Index">Shop Now</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Shop" asp-action="Cart">
+                                Cart
+                                @if (Context.Session.GetInt32("ItemCount") != 0)
+                                {
+                                    <span class="badge badge-secondary">@Context.Session.GetInt32("ItemCount")</span>
+                                }
+                            </a>
+                        </li>
                         @if (User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">
@@ -32,7 +43,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
                             </li>
                         }
-                        </ul>
+                    </ul>
                 </div>
             </div>
         </nav>
